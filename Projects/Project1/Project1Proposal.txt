@@ -21,4 +21,4 @@ Properties
 
 Additional: 
 Validation (loops?)
-Persist deposits into a DB
+Persist deposits into a DB or possibly just a txt via FileIO?
