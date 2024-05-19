@@ -1,86 +1,325 @@
-﻿using System;
+﻿using System.Collections;
+//added user login method
 
 class Program
-{//---Start of Class Program---
-    static void Main(string[] args)
-    {//---Start of Main Method---
+{
+    static AccountService accs = new(); //moved this out of main method so it can be used in any of the methods and we dont have to pass this every single subsequent method
+        //static methods can only use other static members... since main method is static, we need to make the other methods static (fields, methods, etc)
+    
+    static UserService us = new();
+    
+    //TODO: may need to remove static UserServices userserivces = new();
 
-        //double deposit;
-        //double withdrawl;
-        //double balance = deposit - withdrawl;
+    static void Main(string[] args)
+    {
+                //Clear the console screen for a cleaner visual feel
+        Console.Clear();
+
+        //Add a pause after clearing before program starts to display
+        Thread.Sleep(750);
+
+        //MWelcome Message, will only show upon initial program launch
+        System.Console.WriteLine(@"                  _ _.-'`-._ _");
+        System.Console.WriteLine(@"                 ;.'_DotNet_'.;");
+        System.Console.WriteLine(@"      _________n.[__Bootcamp__].n_________");
+        System.Console.WriteLine(@"     |""__""___""__""||==||==||==||""__""___""__""|");
+        System.Console.WriteLine(@"     |'''''''''''||..||..||..||'''''''''''|");
+        System.Console.WriteLine(@"     |LI LI LI LI||LI||LI||LI||LI LI LI LI|");
+        System.Console.WriteLine(@"     |.. .. .. ..||..||..||..||.. .. .. ..|");
+        System.Console.WriteLine(@"     |LI LI LI LI||LI||LI||LI||LI LI LI LI|");
+        System.Console.WriteLine(@" ,,;;,;;;,;;;,;;;,;;;,;;;,;;;,;;,;;;,;;;,;;;;,,");
+        System.Console.WriteLine(@";;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;");
+        System.Console.WriteLine("\nWelcome to the Dotnet Bootcamp Banking App!\n\n");
 
         Login();
-        Menu();
-        Deposit();
-        Withdrawl();
+        //Display the Main Menu
+        //MainMenu();
+    }
 
-        //how to make the deposits/withdrawls accept multiple? array? list?
+    //TODO: Create a login menu, and move the welcome message to login menu
+    private static void MainMenu()
+    {
 
-    }//---End of Main Method---
+        
+        //TODO: may need to remove System.Console.WriteLine("\nPlease enter your user ID to login.");
+        //TODO: may need to remove int loginInput = int.Parse(Console.ReadLine() ?? "0");
+        
+        bool keepGoing = true;
 
-   
-   
-      public static void Withdrawl()
-   {
-        Console.WriteLine("Please enter the amount of your withdrawl: (Format 000.00)");
-        Console.Write("Amount: ");
-        double withdrawl = double.Parse(Console.ReadLine());
-
-        //wrap this is some sort of whie loop for mutliple deposits?
-        //how to add validation for double? i.e. to ensure includes decimal place.
-        if (withdrawl != 0)
+        while (keepGoing)
         {
-            double total = 0;
+            //Add a pause before displaying Main Menu
+            Thread.Sleep(1500);
+
+            //Main Menu
+            System.Console.WriteLine("\nWhat would you like to do?");
+            System.Console.WriteLine("=================================");
+            System.Console.WriteLine("[1] View My Account(s)");
+            System.Console.WriteLine("[2] Deposit into an Account");
+            System.Console.WriteLine("[3] Withdraw from Account");
+            System.Console.WriteLine("[4] Transfer between Accounts");
+            //System.Console.WriteLine("[4] View Checked out Accounts"); //if using later, update validation to 4
+            System.Console.WriteLine("[0] Quit");
+            System.Console.WriteLine("=================================");
+
+            //Allow user to enter a selection
+            System.Console.Write("Enter your selection: ");
+            int input = int.Parse(Console.ReadLine() ?? "0");
             
-            total += withdrawl;
-            Console.WriteLine("You withdrawl of $" + withdrawl + " was successful.");
+            //Validate user selection
+            input = ValidateCmd(input, 4);
+            System.Console.WriteLine();
+
+            //Extracted to method - uses switch case to determine what to do next.
+            keepGoing = DecideNextOption(input);
+        }
+    }
+
+    private static void Login()
+    {
+        System.Console.WriteLine("Please enter your username:");
+        System.Console.Write("Username: ");
+        string username = System.Console.ReadLine() ?? "0";
+        System.Console.WriteLine("Please enter your password:");
+        System.Console.Write("Password: ");
+        string password = System.Console.ReadLine() ?? "0";
+        User loggedInUser = us.LoginUser(username, password);
+        if (loggedInUser != null)
+        {
+            System.Console.WriteLine("You have successfully logged in!");
+           
+            MainMenu();
         }
         else
         {
-            Console.WriteLine("Please enter a valid withdrawl amount. (Valid format 000.00)");
-            //loop back to enter valid value or put a readline here?
+            System.Console.WriteLine("Login failed. Please try again.\n");
+            Login();
         }
-   }
-   public static void Deposit()
-   {
-        Console.WriteLine("Please enter the amount of your deposit: (Format 000.00)");
-        Console.Write("Amount: ");
-        double deposit = double.Parse(Console.ReadLine());
 
-        //wrap this is some sort of whie loop for mutliple deposits?
-        //how to add validation for double? i.e. to ensure includes decimal place.
-        if (deposit != 0)
+    }
+    private static bool DecideNextOption(int input)
+    {
+        switch (input)
         {
-            double total = 0;
+            case 1:
+                {
+                    RetrievingAvailableAccounts();
+                    break;
+                }
+            case 2:
+                {
+                    DepositIntoAccount();
+                    break;
+                }
+            case 3:
+                {
+                    WithdrawFromAccount();
+                    break;
+                }
+            case 4:
+                {
+                    TransferBetweenAccounts();
+                    break;
+                }
+            // case 4: //TODO: comee back
+            //     {
+            //         RetrievingCheckedOutAccounts();
+            //         break;
+            //     }
+            case 0:
+            default:
+                {
+                    //If option 0 OR default (anything else) -> set keepGoing to false and end program.
+                    System.Console.WriteLine("Thanks for trusting Dotnet Bootcamp Banking with all your banking needs! Have a great day!\n");
+                    return false;
+                }
+        }
+
+        return true;
+    }
+
+    private static void RetrievingAvailableAccounts()
+    {
+        //Create list from Available Accounts
+        List<Account> accounts = accs.GetAvailableAccounts();
+
+        //Display Available Accounts
+        System.Console.WriteLine("========= Your Accounts =========");
+        foreach (Account a in accounts)
+        {
+            System.Console.WriteLine(a);
+        }
+        System.Console.WriteLine("=================================");
+        
+        //Insert Pause for reading accounts longer.
+        Thread.Sleep(1500);
+    }
+
+    private static void TransferBetweenAccounts()
+    {
+        //Start by withdrawing from one account
+        System.Console.WriteLine("What account would you like to transfer from?");
+        while (true)
+        {
+            //Pick an account
+            Account account = PromptUserForAccount();
+
+            //Adding a way out...
+            if (account == null) return; //Leaves method.
             
-            total += deposit;
-            Console.WriteLine("You deposit of $" + deposit + " was successful.");
+            //Withdraw from Account
+            account = accs.TransferWithdrawl(account);
+            // if (account != null)
+            // {
+            //     System.Console.WriteLine("\nAccount withdrawl successful. Your new balance is: $" + account.Balance); break; // <-- :O
+            // }
+            // else
+            // {
+            //     System.Console.WriteLine("Please Try Another Account.");
+            // }
+            if(account == null)
+                {
+                    System.Console.WriteLine("\nPlease Try Another Account.");
+                }
+                else
+                {
+                        //transfer to new account
+                    while (true)
+                    {
+                        System.Console.WriteLine("\nWhat account would you like to transfer to?");
+                        //Pick an account
+                        account = PromptUserForAccount();
+                        
+                        //Adding a way out...
+                        if (account == null) return; //Leaves method.
+                        
+                        //Deposit into account
+                        account = accs.TransferDeposit(account);
+                        // if (account != null)
+                        // {
+                        //     System.Console.WriteLine("\nAccount deposit successful. Your new balance is: $" + account.Balance); break; // <-- :O
+                        // }
+                        // else
+                        // {
+                        //     System.Console.WriteLine("Please Try Another Account.");
+                        // }
+                        if(account == null)
+                        {
+                            System.Console.WriteLine("\nPlease Try Another Account.");
+                        }
+                        {
+                            break;
+                        }
+                    }
+                    break;
+                }
+
+
         }
-        else
+    }
+    private static void DepositIntoAccount()
+    {
+        while (true)
         {
-            Console.WriteLine("Please enter a valid deposit amount. (Valid format 000.00)");
-            //loop back to enter valid value or put a readline here?
+            //Pick an account
+            Account account = PromptUserForAccount();
+            
+            //Adding a way out...
+            if (account == null) return; //Leaves method.
+            
+            //Deposit into account
+            account = accs.Deposit(account);
+            // if (account != null)
+            // {
+            //     System.Console.WriteLine("\nAccount deposit successful. Your new balance is: $" + account.Balance); break; // <-- :O
+            // }
+            // else
+            // {
+            //     System.Console.WriteLine("Please Try Another Account.");
+            // }
+            if(account == null)
+            {
+                System.Console.WriteLine("Please Try Another Account.");
+            }
+            else
+            {
+                break;
+            }
         }
-   }
-    public static void Menu()
-    {
-        Console.WriteLine("\nWhat can I help you with?\n"); //add firstName lookup after loggin functions
-        Console.WriteLine("\t1) Make a deposit");
-        Console.WriteLine("\t2) Make a withdrawl");
-        Console.WriteLine("\t3) See account balance");
-        Console.WriteLine("\t4)  --PENDING--");
 
     }
-    public static void Login()
+
+    private static void WithdrawFromAccount()
     {
-        //need to create a login function
-        Console.WriteLine("Welcome to .Net Bookcamp Banking!\nPlease enter your username and password to sign in.\n");
+        while (true)
+        {
+            //Pick an account
+            Account account = PromptUserForAccount();
 
-        Console.Write("Username: ");
-        string userName = Console.ReadLine();
-        Console.Write("Passowrd: ");
-        string password = Console.ReadLine();
-
-        //need to determine validation both on input fields then how to look up users for role based access (user/mgr/admin)
+            //Adding a way out...
+            if (account == null) return; //Leaves method.
+            
+            //Withdraw from Account
+            account = accs.Withdrawl(account);
+            // if (account != null)
+            // {
+            //     System.Console.WriteLine("\nAccount withdrawl successful. Your new balance is: $" + account.Balance); break; // <-- :O
+            // }
+            // else
+            // {
+            //     System.Console.WriteLine("Please Try Another Account.");
+            // }
+            if(account == null)
+            {
+                System.Console.WriteLine("Please Try Another Account.");
+            }
+            else
+            {
+                break;
+            }
+        }
     }
-}//---End of Class Program---
+
+    //Unused Method at this time
+    private static void RetrievingCheckedOutAccounts()
+    {
+        System.Console.WriteLine("\nSorry the code for this method is in another castle.");
+    }
+
+
+
+    //Helper Methods
+    private static Account PromptUserForAccount()
+    {
+        //Input Validation for Selecting Account
+        Account retrievedAccount = null;
+        while (retrievedAccount == null)
+        {
+            System.Console.WriteLine("Please enter an Account ID (0 to Exit Process): ");
+            System.Console.Write("Account ID: ");
+            int input = int.Parse(Console.ReadLine() ?? "0"); //BUG: need to add exception handling...if user input char/etc... try catch/loop for an input
+            //Okay I want to add a "way out" for anytime they want to exist the process.
+            if (input == 0) return null;
+
+            //BUG: need to add some form of exception handling... if user enters a monetary value accidently instead of selecting account
+
+            retrievedAccount = accs.GetAccount(input);    // <-- add a trivial service method here.
+        }
+        //Leaving the loop indicates that they have successfully picked a valid account.
+        return retrievedAccount;
+    }
+
+    //Generic Command Input Validator - assume 1-maxOption are the number of options. and 0 is an option to quit.
+    private static int ValidateCmd(int cmd, int maxOption)
+    {
+        while (cmd < 0 || cmd > maxOption)
+        {
+            System.Console.WriteLine("\n*Invalid Selection - Please Enter a selection 1-" + maxOption + "; or 0 to Quit");
+            System.Console.Write("Enter your selection: ");
+            cmd = int.Parse(Console.ReadLine() ?? "0");
+        }
+
+        //if input was already valid - it skips the if statement and just returns the value.
+        return cmd;
+    }
+}
