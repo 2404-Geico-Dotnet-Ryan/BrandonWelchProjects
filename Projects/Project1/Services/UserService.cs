@@ -6,7 +6,12 @@ class UserService
         -Log In
     */
 
-    UserRepo ur = new();
+    UserRepo ur;
+
+    public UserService(UserRepo ur)
+    {
+        this.ur = ur;
+    }
 
 
     public User RegisterUser(User u)

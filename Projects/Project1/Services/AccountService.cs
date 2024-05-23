@@ -6,8 +6,13 @@
 
 class AccountService
 {
-    AccountRepo ar = new();
+    AccountRepo ar;
     decimal transferAmount = 0;
+
+    public AccountService(AccountRepo ar)
+    {
+        this.ar = ar;
+    }
 
     public Account TransferDeposit (Account a)
     {
@@ -22,7 +27,10 @@ class AccountService
         // System.Console.Write("Deposit Amount: $");
         // decimal depositAmount = decimal.Parse(System.Console.ReadLine());
         a.Balance += transferAmount; 
-        System.Console.WriteLine("\nAccount transfer deposit successful. Your new balance in your " + a.Type + " account is: " + a.Balance.ToString("C")); //added from program.cs DepositIntoAccount
+        System.Console.Write("\nAccount transfer deposit successful. Your new balance in your " + a.Type + " account is: ");
+        Console.ForegroundColor = ConsoleColor.Green;
+        System.Console.WriteLine(a.Balance.ToString("C")); //added from program.cs WithdrawFromAccount
+        Console.ResetColor();
     
         //Update the data storage with the changes
         ar.UpdateAccount(a);
@@ -51,12 +59,16 @@ class AccountService
             //string.Format("{0:C}", a.Balance);
             //string newbalance = a.Balance.ToString("C");
 
-
-            System.Console.WriteLine("\nAccount transfer withdrawl successful. Your new balance in your " + a.Type + " account is: " + a.Balance.ToString("C")); //added from program.cs WithdrawFromAccount
+            System.Console.Write("\nAccount transfer withdrawl successful. Your new balance in your " + a.Type + " account is: ");
+            Console.ForegroundColor = ConsoleColor.Green;
+            System.Console.WriteLine(a.Balance.ToString("C")); //added from program.cs WithdrawFromAccount
+            Console.ResetColor();
         }
         else
         {
+            Console.ForegroundColor = ConsoleColor.Red;
             System.Console.WriteLine("\n*Insufficient Funds. Please try again.");
+            Console.ResetColor();
             return null;
         }
         //Update the data storage with the changes
@@ -87,12 +99,16 @@ class AccountService
             //string.Format("{0:C}", a.Balance);
             //string newbalance = a.Balance.ToString("C");
 
-
-            System.Console.WriteLine("\nAccount withdrawl successful. Your new balance is: " + a.Balance.ToString("C")); //added from program.cs WithdrawFromAccount
+            System.Console.Write("\nAccount withdrawl successful. Your new balance is: ");
+            Console.ForegroundColor = ConsoleColor.Green;
+            System.Console.WriteLine(a.Balance.ToString("C")); //added from program.cs WithdrawFromAccount
+            Console.ResetColor();
         }
         else
         {
+            Console.ForegroundColor = ConsoleColor.Red;
             System.Console.WriteLine("\n*Insufficient Funds. Please try again.");
+            Console.ResetColor();
         }
         //Update the data storage with the changes
         ar.UpdateAccount(a);
@@ -113,7 +129,11 @@ class AccountService
         System.Console.Write("Deposit Amount: $");
         decimal depositAmount = decimal.Parse(System.Console.ReadLine());
         a.Balance += depositAmount; 
-        System.Console.WriteLine("\nAccount deposit successful. Your new balance is: " + a.Balance.ToString("C")); //added from program.cs DepositIntoAccount
+
+        System.Console.Write("\nAccount deposit successful. Your new balance is: ");
+        Console.ForegroundColor = ConsoleColor.Green;
+        System.Console.WriteLine(a.Balance.ToString("C")); //added from program.cs WithdrawFromAccount
+        Console.ResetColor();
     
         //Update the data storage with the changes
         ar.UpdateAccount(a);
@@ -122,10 +142,10 @@ class AccountService
         return a;
 
     }
-    public List<Account> GetAvailableAccounts()
+    public List<Account> GetAvailableAccounts(User loggedInUser)
     {
         //Get All Accounts
-        List<Account> allAccounts = ar.GetAllAccounts();
+        List<Account> allAccounts = ar.GetAllAccounts(loggedInUser.Id);
         
         //Then Filter Out Unavailable Accounts (or whatever accounts you dont want)
         List<Account> availableAccounts = new(); //create new list that will be come filtered list
@@ -142,8 +162,12 @@ class AccountService
         //Return Filtered List
         return availableAccounts;
     } 
-    public Account GetAccount(int id)
+    public Account GetAccount(int id) //TODO: still needed?
     {
         return ar.GetAccount(id);
+    }
+        public Account GetAccounts(int id)
+    {
+        return ar.GetAccounts(id);
     }
 }

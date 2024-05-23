@@ -5,6 +5,7 @@ class Account
     public string Type { get; set; }
     //public double Price { get; set; }
     public bool Available { get; set; }
+    public int UserId { get; set; }
 
     public Account()
     {
@@ -18,13 +19,14 @@ class Account
     }
 
     //public Account(int id, decimal balance, string type, double price, bool available)
-    public Account(int id, decimal balance, string type, bool available)
+    public Account(int id, decimal balance, string type, bool available, int userId)
     {
         Id = id;
         Balance = balance;
         Type = type;
         //Price = price;
         Available = available;
+        UserId = userId;
     }
 
     public override string ToString()

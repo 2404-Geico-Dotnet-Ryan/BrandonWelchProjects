@@ -7,8 +7,8 @@ class AccountStorage
     //Making this constructor give us some pre-loaded Accounts to work with.
     public AccountStorage()
     {
-        Account account1 = new Account(idCounter, 1075.25m, "Checking", true); idCounter++;
-        Account account2 = new Account(idCounter, 500.75m, "Savings", true); idCounter++;
+        Account account1 = new Account(idCounter, 1075.25m, "Checking", true, 1); idCounter++;
+        Account account2 = new Account(idCounter, 500.75m, "Savings", true, 1); idCounter++;
         
         accounts = new(); //sets the dictionary to an empty collection
         accounts.Add(account1.Id, account1);
