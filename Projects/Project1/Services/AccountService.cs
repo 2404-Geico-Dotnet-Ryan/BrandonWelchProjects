@@ -104,9 +104,10 @@ class AccountService
             System.Console.WriteLine(a.Balance.ToString("C")); //added from program.cs WithdrawFromAccount
             Console.ResetColor();
         }
-        else
+        else 
         {
             Console.ForegroundColor = ConsoleColor.Red;
+            Console.BackgroundColor = ConsoleColor.Yellow;
             System.Console.WriteLine("\n*Insufficient Funds. Please try again.");
             Console.ResetColor();
         }

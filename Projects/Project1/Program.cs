@@ -14,6 +14,9 @@ class Program
 
     static void Main(string[] args)
     {
+        //Clear the console screen for a cleaner visual feel
+        Console.Clear();
+        
         //Create connection to DB
         string path = @"C:\Users\A140953\OneDrive - Government Employees Insurance Company\Documents\RevatureTraining\DotNetBootCamp\Connection Strings\DotNetBankingDBcs.txt";
         string connectionString = File.ReadAllText(path);
@@ -23,9 +26,6 @@ class Program
 
         AccountRepo ar = new(connectionString); //TODO <-- we'll need to add the connection string in the near future
         accs = new(ar);
-        
-        //Clear the console screen for a cleaner visual feel
-        Console.Clear();
 
         //Add a pause after clearing before program starts to display
         Thread.Sleep(750);
@@ -251,7 +251,7 @@ class Program
                 {
                     //If option 0 OR default (anything else) -> set keepGoing to false and end program.
                     System.Console.WriteLine("You have successfully logged out!\n");
-                    Thread.Sleep(2000);
+                    Thread.Sleep(2000); 
                     Console.Clear();
                     return false;
                 }
